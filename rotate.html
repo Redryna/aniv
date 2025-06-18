@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotate Device</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: white;
+      font-family: sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .message {
+      font-size: 24px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="message">
+    📱 Silakan putar perangkat Anda ke <b>mode landscape</b> untuk melanjutkan.
+  </div>
+
+  <script>
+    function checkOrientationAndRedirect() {
+      if (window.innerWidth > window.innerHeight) {
+        window.location.href = "aniv.html";
+      }
+    }
+
+    // Cek saat load dan saat orientasi berubah
+    window.addEventListener('load', checkOrientationAndRedirect);
+    window.addEventListener('resize', checkOrientationAndRedirect);
+    window.addEventListener('orientationchange', checkOrientationAndRedirect);
+  </script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swipe Carousel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+    }
+
+    .carousel {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+
+    .card {
+      position: absolute;
+      width: 45vw;
+      max-width: 200px;
+      aspect-ratio: 2 / 3;
+      background: #aaa;
+      border-radius: 10px;
+      overflow: hidden;
+      opacity: 0.3;
+      transform: scale(0.8);
+      transition: all 0.5s ease;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6));
+      pointer-events: none;
+    }
+
+    .card.active {
+      transform: scale(1.3) translateY(-10px);
+      opacity: 1;
+      z-index: 2;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: scale(1.3) translateY(-10px);
+      }
+      50% {
+        transform: scale(1.3) translateY(-20px);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .card {
+        width: 65vw;
+        max-width: none;
+      }
+    }
+
+    .fadeout {
+      animation: cardFade 0.8s ease forwards;
+    }
+
+    @keyframes cardFade {
+      0% {
+        opacity: 1;
+        transform: scale(1.3) translateY(-10px);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="carousel-container" id="carouselContainer">
+    <div class="carousel" id="carousel"></div>
+  </div>
+
+  <script>
+    const images = [ 'img/1.png', 'img/lock.png', 'img/lock.png', 'img/lock.png', 'img/lock.png', 'img/lock.png', 'img/lock.png', 'img/lock.png' ];
+
+    const targetPages = [
+      'rotate.html',
+      '2.html',
+      '3.html',
+      '4.html',
+      '5.html',
+      '6.html',
+      '7.html'
+    ];
+
+    const carousel = document.getElementById("carousel");
+    const container = document.getElementById("carouselContainer");
+    let centerIndex = 0;
+    const unlockSwipeRightAfter = 4;
+
+    function render() {
+      carousel.innerHTML = '';
+      images.forEach((src, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const offset = index - centerIndex;
+        card.style.transform = `translateX(${offset * 35}vw) scale(${offset === 0 ? 1.3 : 0.8})`;
+        card.style.opacity = offset === 0 ? 1 : 0.3;
+        if (offset === 0) card.classList.add('active');
+
+        const img = document.createElement('img');
+        img.src = src;
+        card.appendChild(img);
+
+        if (offset === 0) {
+          card.addEventListener('click', () => {
+            card.classList.add('fadeout');
+            setTimeout(() => {
+              const targetPage = targetPages[centerIndex];
+              if (targetPage) {
+                window.location.href = targetPage;
+              }
+            }, 800);
+          });
+        }
+
+        carousel.appendChild(card);
+      });
+    }
+
+    function next() {
+      if (centerIndex < images.length - 1) {
+        centerIndex++;
+        render();
+      }
+    }
+
+    function prev() {
+      if (centerIndex > 0) {
+        centerIndex--;
+        render();
+      }
+    }
+
+    let startX = 0;
+    let endX = 0;
+
+    container.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    container.addEventListener("touchend", (e) => {
+      endX = e.changedTouches[0].clientX;
+      const diff = endX - startX;
+
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          prev();
+        } else {
+          next();
+        }
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
